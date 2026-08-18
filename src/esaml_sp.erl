@@ -382,6 +382,21 @@ decrypt(CipherValue, "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p", Key) ->
         {rsa_padding, rsa_pkcs1_oaep_padding},
         {rsa_pad, rsa_pkcs1_oaep_padding}
     ],
+    public_key:decrypt_private(CipherValue, Key, Opts);
+
+%% XML Encryption 1.1 (2009) RSA-OAEP. Unlike the 2001 rsa-oaep-mgf1p URI,
+%% this algorithm allows an explicit DigestMethod/MGF child to select a
+%% non-default hash; we only support the SHA-1/MGF1-SHA1 combination here
+%% (the implicit default of the 2001 URI, and what we've observed IdPs
+%% actually send), since erlang's public_key OAEP options default to SHA-1
+%% when rsa_oaep_md/rsa_mgf1_md aren't specified. An IdP sending a different
+%% digest/MGF here will fail decryption with a padding error rather than
+%% silently producing wrong output.
+decrypt(CipherValue, "http://www.w3.org/2009/xmlenc11#rsa-oaep", Key) ->
+    Opts = [
+        {rsa_padding, rsa_pkcs1_oaep_padding},
+        {rsa_pad, rsa_pkcs1_oaep_padding}
+    ],
     public_key:decrypt_private(CipherValue, Key, Opts).
 
 
