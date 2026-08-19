@@ -26,7 +26,7 @@
 -include_lib("public_key/include/public_key.hrl").
 
 -type xml_thing() :: #xmlDocument{} | #xmlElement{} | #xmlAttribute{} | #xmlPI{} | #xmlText{} | #xmlComment{}.
--type sig_method() :: rsa_sha1 | rsa_sha256.
+-type sig_method() :: rsa_sha1 | rsa_sha256 | rsa_sha512.
 -type sig_method_uri() :: string().
 -type fingerprint() :: binary() | {sha | sha256, binary()}.
 
@@ -252,6 +252,13 @@ signature_props(rsa_sha256) ->
     HashFunction = sha256,
     DigestMethod = "http://www.w3.org/2001/04/xmlenc#sha256",
     Url = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
+    {HashFunction, DigestMethod, Url};
+signature_props("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512") ->
+    signature_props(rsa_sha512);
+signature_props(rsa_sha512) ->
+    HashFunction = sha512,
+    DigestMethod = "http://www.w3.org/2001/04/xmlenc#sha512",
+    Url = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512",
     {HashFunction, DigestMethod, Url}.
 
 -ifdef(TEST).
